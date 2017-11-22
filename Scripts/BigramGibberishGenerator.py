@@ -31,11 +31,18 @@ def GetBiGramDictChar(corpus, chars, ch):
         charBigramDict[c] = (1.0 * len(transitionInds)) / charCount
     return charBigramDict
 
+def GetCharacterDistribution(corpus):
+    chars = list(set(corpus.lower()))
+    corpusSize = len(corpus)
+    probs = [1.0*len([i for (i,c) in enumerate(corpus) if c == ch])/corpusSize for ch in chars]
+    return [chars, probs]
+
+
 def GenerateGibberish(bigramStruct, length):
     k = list(bigramStruct.keys())
     
-    seedInd = rand.randint(0, len(k))
-    priorChar = k[seedInd]
+    charDist = GetCharacterDistribution(corpus)
+    priorChar = rand.choice(charDist[0],1,True,charDist[1])[0]
     gibberishString = str(priorChar)
     for i in range(length-1):
         transitionDict = bigramStruct[priorChar]
@@ -43,8 +50,16 @@ def GenerateGibberish(bigramStruct, length):
         priorChar = rand.choice(k,1,True, transitionProbs)[0]
         gibberishString = gibberishString + str(priorChar)
     return gibberishString
+
     
 def Main(corpus):
     bigramStruct = GenerateBigramDictionary(corpus)
     gibberishSample = GenerateGibberish(bigramStruct, 200)
     return gibberishSample
+
+
+
+
+
+
+
